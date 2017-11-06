@@ -26,6 +26,8 @@ var SERVER;
 var LOCALHOST;
 var SLOCALHOST;
 
+return;
+
 before(function(cb) {
     try {
         SERVER = restify.createServer({

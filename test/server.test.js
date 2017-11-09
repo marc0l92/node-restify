@@ -2747,133 +2747,116 @@ test('should cleanup inflight requests count on uncaughtExceptions', function(
         t.end();
     });
 });
-//
-// test('should show debug information', function(t) {
-//     SERVER.pre(function pre(req, res, next) {
-//         return next();
-//     });
-//     SERVER.pre(function pre2(req, res, next) {
-//         return next();
-//     });
-//     SERVER.use(function use(req, res, next) {
-//         return next();
-//     });
-//     SERVER.use(function use2(req, res, next) {
-//         return next();
-//     });
-//     SERVER.on('after', function aft() {});
-//     SERVER.on('after', function aft2() {});
-//
-//     SERVER.get(
-//         '/foo',
-//         function(req, res, next) {
-//             return next();
-//         },
-//         function foo(req, res, next) {
-//             res.end();
-//             return next();
-//         }
-//     );
-//
-//     SERVER.get('/bar/:a/:b', function bar(req, res, next) {
-//         res.end();
-//         return next();
-//     });
-//
-//     SERVER.get(/^\/([a-zA-Z0-9_\.~-]+)\/(.*)/, function freeform(
-//         req,
-//         res,
-//         next
-//     ) {
-//         res.end();
-//         return next();
-//     });
-//
-//     var debugInfo = SERVER.getDebugInfo();
-//
-//     t.ok(debugInfo);
-//     t.ok(debugInfo.routes);
-//
-//     debugInfo.routes.forEach(function(route) {
-//         t.ok(route);
-//         t.equal(typeof route.name, 'string');
-//         t.equal(typeof route.method, 'string');
-//         t.ok(
-//             typeof route.input === 'string' ||
-//                 route.input instanceof RegExp === true
-//         );
-//         t.equal(typeof route.compiledRegex, 'object');
-//
-//         t.equal(route.versions instanceof Array, true);
-//         route.versions.forEach(function(v) {
-//             t.equal(typeof v, 'string');
-//         });
-//
-//         t.equal(route.handlers instanceof Array, true);
-//         route.handlers.forEach(function(handlerFn) {
-//             t.equal(typeof handlerFn, 'string');
-//         });
-//     });
-//
-//     // check /foo
-//     t.equal(debugInfo.routes[0].handlers[0], 'use');
-//     t.equal(debugInfo.routes[0].handlers[1], 'use2');
-//     t.equal(debugInfo.routes[0].handlers[2], 'anonymous');
-//     t.equal(debugInfo.routes[0].handlers[3], 'foo');
-//
-//     // check /bar
-//     t.equal(debugInfo.routes[0].handlers[0], 'use');
-//     t.equal(debugInfo.routes[0].handlers[1], 'use2');
-//     t.equal(debugInfo.routes[1].handlers[2], 'bar');
-//
-//     // check use, pre, and after handlers
-//     t.ok(debugInfo.server.use);
-//     t.equal(debugInfo.server.use[0], 'use');
-//     t.equal(debugInfo.server.use[1], 'use2');
-//
-//     t.ok(debugInfo.server.pre);
-//     t.equal(debugInfo.server.pre[0], 'pre');
-//     t.equal(debugInfo.server.pre[1], 'pre2');
-//
-//     t.ok(debugInfo.server.after);
-//     t.equal(debugInfo.server.after[0], 'aft');
-//     t.equal(debugInfo.server.after[1], 'aft2');
-//
-//     // detailed test for compiled regex
-//     // verify url parameter regex
-//     t.deepEqual(debugInfo.routes[1].name, 'getbarab054143200');
-//     t.deepEqual(debugInfo.routes[1].method, 'get');
-//     t.deepEqual(debugInfo.routes[1].input, '/bar/:a/:b');
-//     t.ok(debugInfo.routes[1].compiledRegex instanceof RegExp);
-//     t.deepEqual(debugInfo.routes[1].compiledUrlParams, {
-//         0: 'a',
-//         1: 'b'
-//     });
-//     // verify freeform regex
-//     t.deepEqual(debugInfo.routes[2].name, 'getazaz09_054143200');
-//     t.deepEqual(debugInfo.routes[2].method, 'get');
-//     t.ok(debugInfo.routes[2].input instanceof RegExp);
-//     t.ok(debugInfo.routes[2].compiledRegex instanceof RegExp);
-//     // freeform regex input should equal output
-//     t.equal(
-//         debugInfo.routes[2].input.toString(),
-//         debugInfo.routes[2].compiledRegex.toString()
-//     );
-//     t.deepEqual(debugInfo.routes[2].compiledUrlParams, null);
-//
-//     // verify other server details
-//     t.deepEqual(Object.keys(debugInfo.server.formatters), [
-//         'application/javascript',
-//         'application/json',
-//         'text/plain',
-//         'application/octet-stream'
-//     ]);
-//     t.equal(debugInfo.server.address, '127.0.0.1');
-//     t.equal(typeof debugInfo.server.port, 'number');
-//     t.equal(typeof debugInfo.server.inflightRequests, 'number');
-//
-//     t.end();
-// });
+
+test('should show debug information', function(t) {
+    SERVER.pre(function pre(req, res, next) {
+        return next();
+    });
+    SERVER.pre(function pre2(req, res, next) {
+        return next();
+    });
+    SERVER.use(function use(req, res, next) {
+        return next();
+    });
+    SERVER.use(function use2(req, res, next) {
+        return next();
+    });
+    SERVER.on('after', function aft() {});
+    SERVER.on('after', function aft2() {});
+
+    SERVER.get(
+        '/foo',
+        function(req, res, next) {
+            return next();
+        },
+        function foo(req, res, next) {
+            res.end();
+            return next();
+        }
+    );
+
+    SERVER.get('/bar/:a/:b', function bar(req, res, next) {
+        res.end();
+        return next();
+    });
+
+    SERVER.get(/^\/([a-zA-Z0-9_\.~-]+)\/(.*)/, function freeform(
+        req,
+        res,
+        next
+    ) {
+        res.end();
+        return next();
+    });
+
+    var debugInfo = SERVER.getDebugInfo();
+
+    t.ok(debugInfo);
+    t.ok(debugInfo.routes);
+
+    debugInfo.routes.forEach(function(route) {
+        t.ok(route);
+        t.equal(typeof route.name, 'string');
+        t.equal(typeof route.method, 'string');
+
+        t.equal(route.versions instanceof Array, true);
+        route.versions.forEach(function(v) {
+            t.equal(typeof v, 'string');
+        });
+
+        t.equal(route.handlers instanceof Array, true);
+        route.handlers.forEach(function(handlerFn) {
+            t.equal(typeof handlerFn, 'string');
+        });
+    });
+
+    // // check /foo
+    // TODO: should it contain use handlers?
+    t.equal(debugInfo.routes[0].handlers[0], 'use');
+    t.equal(debugInfo.routes[0].handlers[1], 'use2');
+    t.equal(debugInfo.routes[0].handlers[2], 'anonymous');
+    t.equal(debugInfo.routes[0].handlers[3], 'foo');
+
+    // check /bar
+    t.equal(debugInfo.routes[0].handlers[0], 'use');
+    t.equal(debugInfo.routes[0].handlers[1], 'use2');
+    t.equal(debugInfo.routes[1].handlers[2], 'bar');
+
+    // check use, pre, and after handlers
+    t.ok(debugInfo.server.use);
+    t.equal(debugInfo.server.use[0], 'use');
+    t.equal(debugInfo.server.use[1], 'use2');
+
+    t.ok(debugInfo.server.pre);
+    t.equal(debugInfo.server.pre[0], 'pre');
+    t.equal(debugInfo.server.pre[1], 'pre2');
+
+    t.ok(debugInfo.server.after);
+    t.equal(debugInfo.server.after[0], 'aft');
+    t.equal(debugInfo.server.after[1], 'aft2');
+
+    // detailed test for compiled regex
+    // verify url parameter regex
+    t.deepEqual(debugInfo.routes[1].name, 'getbarab054143200');
+    t.deepEqual(debugInfo.routes[1].method, 'get');
+
+    // verify freeform regex
+    t.deepEqual(debugInfo.routes[2].name, 'getazaz09_054143200');
+    t.deepEqual(debugInfo.routes[2].method, 'get');
+
+    // verify other server details
+    t.deepEqual(Object.keys(debugInfo.server.formatters), [
+        'application/javascript',
+        'application/json',
+        'text/plain',
+        'application/octet-stream'
+    ]);
+    t.equal(debugInfo.server.address, '127.0.0.1');
+    t.equal(typeof debugInfo.server.port, 'number');
+    t.equal(typeof debugInfo.server.inflightRequests, 'number');
+
+    t.end();
+});
 
 test("should emit 'pre' event on a 200", function(t) {
     SERVER.get('/foo/:id', function echoId(req, res, next) {

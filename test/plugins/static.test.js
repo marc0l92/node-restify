@@ -190,11 +190,13 @@ describe('static resource plugin', function() {
         serveStaticTest(done, false, '.tmp/folder');
     });
 
-    it('static serves static files in with a root regex', function(done) {
+    // TODO: not supported RegExp in find-my-way
+    it.skip('static serves static files in with a root regex', function(done) {
         serveStaticTest(done, false, '.tmp', new RegExp('/.*'));
     });
 
-    it('static serves static files with a root, !greedy, regex', function(
+    // TODO: not supported RegExp in find-my-way
+    it.skip('static serves static files with a root, !greedy, regex', function(
         done
     ) {
         serveStaticTest(done, false, '.tmp', new RegExp('/?.*'));
@@ -321,7 +323,7 @@ describe('static resource plugin', function() {
                     directory: TMP_PATH
                 });
 
-                SERVER.get(/.*/, function(req, res, next) {
+                SERVER.get('/index.html', function(req, res, next) {
                     serve(req, res, function(nextRoute) {
                         assert.strictEqual(streamWasClosed, true);
                         assert.strictEqual(nextRoute, false);
@@ -358,7 +360,7 @@ describe('static resource plugin', function() {
                     directory: TMP_PATH
                 });
 
-                SERVER.get(/.*/, function(req, res, next) {
+                SERVER.get('/index.html', function(req, res, next) {
                     serve(req, res, function(nextRoute) {
                         assert.strictEqual(nextRoute, false);
                         done();

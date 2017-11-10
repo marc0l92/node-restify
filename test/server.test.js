@@ -5,7 +5,7 @@
 
 var assert = require('assert-plus');
 var bunyan = require('bunyan');
-var childprocess = require('child_process');
+// var childprocess = require('child_process');
 var http = require('http');
 var stream = require('stream');
 

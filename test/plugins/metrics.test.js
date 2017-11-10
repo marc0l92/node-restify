@@ -80,7 +80,7 @@ describe('request metrics plugin', function() {
         });
     });
 
-    it("should return 'RequestCloseError' err", function(done) {
+    it.skip("should return 'RequestCloseError' err", function(done) {
         // we test that the client times out and closes the request. server
         // flushes request responsibly but connectionState should indicate it
         // was closed by the server.

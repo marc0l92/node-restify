@@ -120,7 +120,11 @@ describe('JSON body parser', function() {
         );
     });
 
-    it('should fail to map array req.body onto req.params', function(done) {
+    // TODO: params are resolved lated in the router logic,
+    // we don't know it in the middlewares
+    it.skip('should fail to map array req.body onto req.params', function(
+        done
+    ) {
         SERVER.use(
             restify.plugins.jsonBodyParser({
                 mapParams: true
@@ -141,6 +145,7 @@ describe('JSON body parser', function() {
         });
     });
 
+    // TODO: router param mapping runs later
     it('should map req.body onto req.params', function(done) {
         SERVER.use(
             restify.plugins.jsonBodyParser({
@@ -170,7 +175,8 @@ describe('JSON body parser', function() {
         );
     });
 
-    it('should take req.body and stomp on req.params', function(done) {
+    // TODO: body parser runs before router
+    it.skip('should take req.body and stomp on req.params', function(done) {
         SERVER.use(
             restify.plugins.jsonBodyParser({
                 mapParams: true,

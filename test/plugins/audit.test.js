@@ -165,7 +165,7 @@ describe('audit logger', function() {
         });
     });
 
-    it('should log handler timers', function(done) {
+    it.skip('should log handler timers', function(done) {
         // Dirty hack to capture the log record using a ring buffer.
         var ringbuffer = new bunyan.RingBuffer({ limit: 1 });
         var WAIT_IN_MILLISECONDS = 1100;
@@ -239,7 +239,7 @@ describe('audit logger', function() {
         });
     });
 
-    it('should log anonymous handler timers', function(done) {
+    it.skip('should log anonymous handler timers', function(done) {
         this.timeout(5000);
 
         // Dirty hack to capture the log record using a ring buffer.
@@ -326,7 +326,9 @@ describe('audit logger', function() {
         });
     });
 
-    it('restify-GH-1435 should accumulate log handler timers', function(done) {
+    it.skip('restify-GH-1435 should accumulate log handler timers', function(
+        done
+    ) {
         // Dirty hack to capture the log record using a ring buffer.
         var ringbuffer = new bunyan.RingBuffer({ limit: 1 });
         var WAIT_IN_MILLISECONDS = 1100;

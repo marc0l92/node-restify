@@ -11,7 +11,7 @@ var _ = require('lodash');
 var port = 3000;
 
 // Disabling cache: it's not fair as it aims to the worst case, when
-// cache hit ratio is 0%. However it's still better than a worst
+// cache hit ratio is 0%. However, it's still better than the worst
 // as it doesn't require extra time to maintain the LRU cache.
 // There is no other way to simulate 100+ different endpoint
 // calls with the current benchmark suite.

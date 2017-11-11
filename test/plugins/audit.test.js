@@ -165,7 +165,7 @@ describe('audit logger', function() {
         });
     });
 
-    it.skip('should log handler timers', function(done) {
+    it('should log handler timers', function(done) {
         // Dirty hack to capture the log record using a ring buffer.
         var ringbuffer = new bunyan.RingBuffer({ limit: 1 });
         var WAIT_IN_MILLISECONDS = 1100;
@@ -239,7 +239,7 @@ describe('audit logger', function() {
         });
     });
 
-    it.skip('should log anonymous handler timers', function(done) {
+    it('should log anonymous handler timers', function(done) {
         this.timeout(5000);
 
         // Dirty hack to capture the log record using a ring buffer.
@@ -262,6 +262,20 @@ describe('audit logger', function() {
                 event: 'after'
             })
         );
+
+        SERVER.pre(function(req, res, next) {
+            next();
+        });
+        SERVER.pre(function(req, res, next) {
+            next();
+        });
+
+        SERVER.use(function(req, res, next) {
+            next();
+        });
+        SERVER.use(function(req, res, next) {
+            next();
+        });
 
         SERVER.get(
             '/audit',
@@ -291,6 +305,30 @@ describe('audit logger', function() {
                 ringbuffer.records.length,
                 1,
                 'should only have 1 log record'
+            );
+            assertIsAtLeastWithTolerate(
+                record.req.timers['pre-0'],
+                0,
+                TOLERATED_MICROSECONDS,
+                'pre-0'
+            );
+            assertIsAtLeastWithTolerate(
+                record.req.timers['pre-1'],
+                0,
+                TOLERATED_MICROSECONDS,
+                'pre-1'
+            );
+            assertIsAtLeastWithTolerate(
+                record.req.timers['use-0'],
+                0,
+                TOLERATED_MICROSECONDS,
+                'use-0'
+            );
+            assertIsAtLeastWithTolerate(
+                record.req.timers['use-1'],
+                0,
+                TOLERATED_MICROSECONDS,
+                'use-1'
             );
             assertIsAtLeastWithTolerate(
                 record.req.timers['handler-0'],
@@ -326,9 +364,7 @@ describe('audit logger', function() {
         });
     });
 
-    it.skip('restify-GH-1435 should accumulate log handler timers', function(
-        done
-    ) {
+    it('restify-GH-1435 should accumulate log handler timers', function(done) {
         // Dirty hack to capture the log record using a ring buffer.
         var ringbuffer = new bunyan.RingBuffer({ limit: 1 });
         var WAIT_IN_MILLISECONDS = 1100;

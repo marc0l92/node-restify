@@ -23,10 +23,8 @@ var CLIENT;
 var STRING_CLIENT;
 var SERVER;
 
-// var LOCALHOST;
-// var SLOCALHOST;
-
-return;
+var LOCALHOST;
+var SLOCALHOST;
 
 before(function(cb) {
     try {
@@ -49,8 +47,8 @@ before(function(cb) {
                 dtrace: helper.dtrace,
                 retry: false
             });
-            // LOCALHOST = 'http://' + '127.0.0.1:' + PORT;
-            // SLOCALHOST = 'https://' + '127.0.0.1:' + PORT;
+            LOCALHOST = 'http://' + '127.0.0.1:' + PORT;
+            SLOCALHOST = 'https://' + '127.0.0.1:' + PORT;
 
             cb();
         });
@@ -76,10 +74,10 @@ after(function(cb) {
 });
 
 // helper for joining array into strings
-// function join() {
-//     var args = [].slice.call(arguments, 0);
-//     return args.join('');
-// }
+function join() {
+    var args = [].slice.call(arguments, 0);
+    return args.join('');
+}
 
 test('redirect to new string url as-is', function(t) {
     SERVER.get('/1', function(req, res, next) {

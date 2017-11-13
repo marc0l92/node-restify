@@ -27,13 +27,6 @@ var mockRes = {
 
 ///--- Tests
 
-test('sanitize url', function(t) {
-    t.equal(Router.sanitizeUrl('/foo'), '/foo');
-    t.equal(Router.sanitizeUrl('/foo/bar'), '/foo/bar');
-    t.equal(Router.sanitizeUrl('/foo?a=b&c=d'), '/foo');
-    t.end();
-});
-
 test('clean up xss for 404', function(t) {
     var server = restify.createServer();
 
@@ -119,30 +112,20 @@ test('lookup runs a route chain by path and calls next', function(t) {
     ]);
 
     router.lookup(
-        Object.assign({ method: 'GET', url: '/' }, mockReq),
+        Object.assign(
+            {
+                getUrl: function() {
+                    return { pathname: '/' };
+                },
+                method: 'GET'
+            },
+            mockReq
+        ),
         mockRes,
         function next(err) {
             t.ifError(err);
             t.end();
         }
-    );
-});
-
-test('lookup and sanitize', function(t) {
-    var router = new Router({
-        log: {}
-    });
-    router.mount({ method: 'GET', path: '/', name: 'my-route' }, [
-        function(req, res, next) {
-            res.send('Hello world');
-            t.end();
-        }
-    ]);
-
-    router.lookup(
-        Object.assign({ method: 'GET', url: '/?a=b&c=d' }, mockReq),
-        mockRes,
-        function next() {}
     );
 });
 
@@ -158,7 +141,15 @@ test('lookup calls next with err', function(t) {
     ]);
 
     router.lookup(
-        Object.assign({ method: 'GET', url: '/' }, mockReq),
+        Object.assign(
+            {
+                getUrl: function() {
+                    return { pathname: '/' };
+                },
+                method: 'GET'
+            },
+            mockReq
+        ),
         mockRes,
         function next(err) {
             t.deepEqual(err, myErr);
@@ -183,7 +174,15 @@ test('lookup emits routed when route found', function(t) {
     });
 
     router.lookup(
-        Object.assign({ method: 'GET', url: '/' }, mockReq),
+        Object.assign(
+            {
+                getUrl: function() {
+                    return { pathname: '/' };
+                },
+                method: 'GET'
+            },
+            mockReq
+        ),
         mockRes,
         function next() {}
     );
@@ -194,7 +193,15 @@ test('route handles 404', function(t) {
         log: {}
     });
     router.lookup(
-        Object.assign({ method: 'GET', url: '/' }, mockReq),
+        Object.assign(
+            {
+                getUrl: function() {
+                    return { pathname: '/' };
+                },
+                method: 'GET'
+            },
+            mockReq
+        ),
         mockRes,
         function next(err) {
             t.equal(err.statusCode, 404);
@@ -214,7 +221,15 @@ test('route handles method not allowed (405)', function(t) {
     ]);
 
     router.lookup(
-        Object.assign({ url: '/', method: 'POST' }, mockReq),
+        Object.assign(
+            {
+                getUrl: function() {
+                    return { pathname: '/' };
+                },
+                method: 'POST'
+            },
+            mockReq
+        ),
         mockRes,
         function next(err) {
             t.equal(err.statusCode, 405);

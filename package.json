@@ -106,13 +106,11 @@
     "mime": "^1.5.0",
     "negotiator": "^0.6.1",
     "once": "^1.4.0",
-    "parseurl": "1.3.2",
     "pidusage": "^1.2.0",
     "qs": "^6.5.1",
     "restify-errors": "^5.0.0",
     "semver": "^5.4.1",
     "spdy": "^3.4.7",
-    "utils-merge": "1.0.1",
     "uuid": "^3.1.0",
     "vasync": "^1.6.4",
     "verror": "^1.10.0"

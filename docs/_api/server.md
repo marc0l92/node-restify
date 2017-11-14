@@ -41,6 +41,7 @@ routes and handlers for incoming requests.
 
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** an options object
     -   `options.name` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Name of the server. (optional, default `"restify"`)
+    -   `options.dtrace` **[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** enable DTrace support (optional, default `false`)
     -   `options.router` **Router** Router (optional, default `newRouter(opts)`)
     -   `options.log` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** [bunyan](https://github.com/trentm/node-bunyan) instance. (optional, default `bunyan.createLogger(options.name||"restify")`)
     -   `options.version` **([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array))?** Default version(s) to use in all
@@ -59,7 +60,8 @@ routes and handlers for incoming requests.
         will use a domain to catch and respond to any uncaught
         exceptions that occur in it's handler stack.
         [bunyan](https://github.com/trentm/node-bunyan) instance.
-        response header, default is `restify`. Pass empty string to unset the header. (optional, default `false`)
+        response header, default is `restify`. Pass empty string to unset the header.
+        Comes with significant negative performance impact. (optional, default `false`)
     -   `options.spdy` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Any options accepted by
         [node-spdy](https://github.com/indutny/node-spdy).
     -   `options.http2` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Any options accepted by
@@ -96,6 +98,7 @@ Creates a new Server.
 
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** an options object
     -   `options.name` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Name of the server.
+    -   `options.dtrace` **[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** enable DTrace support (optional, default `false`)
     -   `options.router` **Router** Router
     -   `options.log` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** [bunyan](https://github.com/trentm/node-bunyan)
         instance.
@@ -114,6 +117,7 @@ Creates a new Server.
     -   `options.handleUncaughtExceptions` **[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** When true restify
         will use a domain to catch and respond to any uncaught
         exceptions that occur in it's handler stack.
+        Comes with significant negative performance impact.
         [bunyan](https://github.com/trentm/node-bunyan) instance.
         response header, default is `restify`. Pass empty string to unset the header. (optional, default `false`)
     -   `options.spdy` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Any options accepted by

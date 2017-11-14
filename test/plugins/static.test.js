@@ -99,11 +99,10 @@ describe('static resource plugin', function() {
                         opts.default = testFileName;
                         routeName += ' with default';
                     }
-                    var re = regex || new RegExp('/' + testDir + '/?.*');
 
                     SERVER.get(
                         {
-                            path: re,
+                            path: '/' + testDir + '/?.*',
                             name: routeName
                         },
                         restify.plugins.serveStatic(opts)
@@ -158,11 +157,10 @@ describe('static resource plugin', function() {
                         opts.default = testFileName;
                         routeName += ' with default';
                     }
-                    var re = regex || new RegExp('/' + testDir + '/?.*');
 
                     SERVER.get(
                         {
-                            path: re,
+                            path: '/' + testDir + '/?.*',
                             name: routeName
                         },
                         restify.plugins.serveStatic(opts)
@@ -190,16 +188,14 @@ describe('static resource plugin', function() {
         serveStaticTest(done, false, '.tmp/folder');
     });
 
-    // TODO: not supported RegExp in find-my-way
-    it.skip('static serves static files in with a root regex', function(done) {
-        serveStaticTest(done, false, '.tmp', new RegExp('/.*'));
+    it('static serves static files in with a root regex', function(done) {
+        serveStaticTest(done, false, '.tmp', '/.*');
     });
 
-    // TODO: not supported RegExp in find-my-way
-    it.skip('static serves static files with a root, !greedy, regex', function(
+    it('static serves static files with a root, !greedy, regex', function(
         done
     ) {
-        serveStaticTest(done, false, '.tmp', new RegExp('/?.*'));
+        serveStaticTest(done, false, '.tmp', '/?.*');
     });
 
     it('static serves default file', function(done) {
@@ -241,7 +237,7 @@ describe('static resource plugin', function() {
         var tmpPath = path.join(process.cwd(), '.tmp');
 
         SERVER.get(
-            new RegExp('/public/.*'),
+            '/public/.*',
             restify.plugins.serveStatic({ directory: tmpPath })
         );
 
@@ -260,7 +256,7 @@ describe('static resource plugin', function() {
         var tmpPath = path.join(process.cwd(), '.tmp');
 
         SERVER.get(
-            new RegExp('/public/.*'),
+            '/public/.*',
             restify.plugins.serveStatic({ directory: tmpPath })
         );
 
@@ -383,7 +379,7 @@ describe('static resource plugin', function() {
         var tmpPath = path.join(process.cwd(), '.tmp');
 
         SERVER.get(
-            new RegExp('/public/.*'),
+            '/public/.*',
             restify.plugins.serveStatic({ directory: tmpPath })
         );
 
@@ -402,7 +398,7 @@ describe('static resource plugin', function() {
         var tmpPath = path.join(process.cwd(), '.tmp');
 
         SERVER.get(
-            new RegExp('/public/.*'),
+            '/public/.*',
             restify.plugins.serveStatic({ directory: tmpPath })
         );
 

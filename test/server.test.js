@@ -381,12 +381,15 @@ test('OPTIONS', function(t) {
 });
 
 test('RegExp ok', function(t) {
-    SERVER.get(/\/foo/, function tester(req, res, next) {
+    SERVER.get('/example/:file(^\\d+).png', function tester(req, res, next) {
+        t.deepEqual(req.params, {
+            file: '12'
+        });
         res.send('hi there');
         next();
     });
 
-    CLIENT.get('/foo', function(err, _, res, obj) {
+    CLIENT.get('/example/12.png', function(err, _, res, obj) {
         t.ifError(err);
         t.equal(res.statusCode, 200);
         t.equal(obj, 'hi there');
@@ -2170,11 +2173,7 @@ test('should show debug information', function(t) {
         return next();
     });
 
-    SERVER.get(/^\/([a-zA-Z0-9_\.~-]+)\/(.*)/, function freeform(
-        req,
-        res,
-        next
-    ) {
+    SERVER.get('/example/:file(^\\d+).png', function freeform(req, res, next) {
         res.end();
         return next();
     });
@@ -2226,7 +2225,7 @@ test('should show debug information', function(t) {
     t.deepEqual(debugInfo.routes[1].method, 'get');
 
     // verify freeform regex
-    t.deepEqual(debugInfo.routes[2].name, 'getazaz09_');
+    t.deepEqual(debugInfo.routes[2].name, 'getexamplefiledpng');
     t.deepEqual(debugInfo.routes[2].method, 'get');
 
     // verify other server details

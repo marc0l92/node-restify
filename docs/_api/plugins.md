@@ -31,6 +31,7 @@ permalink: /docs/plugins-api/
         -   [Using an external storage mechanism for key/bucket mappings.](#using-an-external-storage-mechanism-for-keybucket-mappings)
     -   [inflightRequestThrottle](#inflightrequestthrottle)
     -   [cpuUsageThrottle](#cpuusagethrottle)
+    -   [conditionalHandler](#conditionalhandler)
     -   [conditionalRequest](#conditionalrequest)
     -   [auditLogger](#auditlogger)
     -   [metrics](#metrics)
@@ -852,6 +853,55 @@ plugin.update({ limit: .4, halfLife: 5000 });
 ```
 
 Returns **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** middleware to be registered on server.pre
+
+### conditionalHandler
+
+Runs first handler that matches to the condition
+
+**Parameters**
+
+-   `candidates` **([Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>)** candidates
+    -   `candidates.handler` **([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)>)** handler(s)
+    -   `candidates.version` **([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>)?** '1.1.0', ['1.1.0', '1.2.0']
+    -   `candidates.contentType` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** accepted content type, '\*\\/json'
+
+**Examples**
+
+```javascript
+server.use(restify.plugins.conditionalHandler({
+   contentType: 'application/json',
+   version: '1.0.0'
+   handler: function (req, res, next) {
+       next();
+   })
+});
+
+server.get('/hello/:name', restify.plugins.conditionalHandler([
+  {
+     version: '1.0.0',
+     handler: function(req, res, next) { res.send('1.x') }
+  },
+  {
+     version: ['1.5.0', '2.0.0'],
+     handler: function(req, res, next) { res.send('1.5.x, 2.x') }
+  },
+  {
+     version: '3.0.0',
+     contentType: ['text/html', 'text/html']
+     handler: function(req, res, next) { res.send('3.x, text') }
+  },
+  {
+     version: '3.0.0',
+     contentType: 'application/json'
+     handler: function(req, res, next) { res.send('3.x, json') }
+  }
+]);
+```
+
+-   Throws **InvalidVersionError** 
+-   Throws **UnsupportedMediaTypeError** 
+
+Returns **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Handler
 
 ### conditionalRequest
 

@@ -138,11 +138,11 @@ test('count returns with the number of registered handlers', function(t) {
     t.end();
 });
 
-test('extractHandlers returns with the array of handlers', function(t) {
+test('getHandlers returns with the array of handlers', function(t) {
     var chain = new Chain();
     var handlers = [function(req, res, next) {}, function(req, res, next) {}];
     chain.use(handlers[0]);
     chain.use(handlers[1]);
-    t.deepEqual(chain.extractHandlers(), handlers);
+    t.deepEqual(chain.getHandlers(), handlers);
     t.end();
 });

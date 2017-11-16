@@ -594,102 +594,6 @@ test('GH-77 uncaughtException (with custom handler)', function(t) {
         t.end();
     });
 });
-//
-// test('GH-97 malformed URI breaks server', function(t) {
-//     SERVER.get('/echo/:name', function(req, res, next) {
-//         res.send(200);
-//         next();
-//     });
-//
-//     CLIENT.get('/echo/mark%', function(err, _, res) {
-//         t.ok(err);
-//         t.equal(res.statusCode, 400);
-//         t.end();
-//     });
-// });
-//
-// test('GH-109 RegExp flags not honored', function(t) {
-//     SERVER.get(/\/echo\/(\w+)/i, function(req, res, next) {
-//         res.send(200, req.params[0]);
-//         next();
-//     });
-//
-//     CLIENT.get('/ECHO/mark', function(err, _, res, obj) {
-//         t.ifError(err);
-//         t.equal(res.statusCode, 200);
-//         t.equal(obj, 'mark');
-//         t.end();
-//     });
-// });
-//
-// test('path+flags ok', function(t) {
-//     SERVER.get({ path: '/foo', flags: 'i' }, function(req, res, next) {
-//         res.send('hi');
-//         next();
-//     });
-//
-//     CLIENT.get('/FoO', function(err, _, res, obj) {
-//         t.ifError(err);
-//         t.equal(res.statusCode, 200);
-//         t.equal(obj, 'hi');
-//         t.end();
-//     });
-// });
-//
-// test('test matches params with custom regex', function(t) {
-//     var Router = require('../lib/router');
-//     var router = new Router({
-//         log: helper.getLog()
-//     });
-//     t.ok(router);
-//     router.mount({
-//         method: 'GET',
-//         name: 'test',
-//         url: '/foo/:bar',
-//         urlParamPattern: '[a-zA-Z0-9-_~%!;@=+\\$\\*\\.]+'
-//     });
-//
-//     var count = 0;
-//     var done = 0;
-//
-//     function find(p, exp) {
-//         count++;
-//         var obj = {
-//             headers: {},
-//             method: 'GET',
-//             contentType: function() {},
-//             path: function() {
-//                 return p;
-//             },
-//             version: function() {
-//                 return '*';
-//             },
-//             url: p
-//         };
-//
-//         process.nextTick(function() {
-//             router.find(obj, {}, function(err, r, ctx) {
-//                 if (exp) {
-//                     t.ifError(err);
-//                     t.ok(r);
-//                     t.ok(ctx);
-//                     t.deepEqual(ctx, { bar: exp });
-//                 } else {
-//                     t.ok(err);
-//                 }
-//
-//                 if (++done === count) {
-//                     t.end();
-//                 }
-//             });
-//         });
-//     }
-//
-//     find('/foo/a%40b.com', 'a@b.com');
-//     find('/foo/a@b.com', 'a@b.com');
-//     find('/foo/a*b.com', 'a*b.com');
-//     find('/foo/a%40b.com/bar', false);
-// });
 
 test('GH-180 can parse DELETE body', function(t) {
     SERVER.use(restify.plugins.bodyParser({ mapParams: false }));
@@ -857,7 +761,7 @@ test('GH #704: Route with a valid RegExp params', function(t) {
     });
 });
 
-test('GH #704: Route with an unvalid RegExp params', function(t) {
+test('GH #704: Route with an invalid RegExp params', function(t) {
     SERVER.get(
         {
             name: 'regexp_param2',
@@ -1058,46 +962,6 @@ test('gh-193 route params basic', function(t) {
     });
 });
 
-// TODO: find-my-way doesn't support it
-// test('gh-193 same url w/params', function(t) {
-//     var count = 0;
-//
-//     SERVER.use(function(req, res, next) {
-//         count++;
-//         next();
-//     });
-//
-//     SERVER.get(
-//         {
-//             name: 'foo',
-//             path: '/foo/:id'
-//         },
-//         function(req, res, next) {
-//             t.equal(req.params.id, 'blah');
-//             next('foo2');
-//         }
-//     );
-//
-//     SERVER.get(
-//         {
-//             name: 'foo2',
-//             path: '/foo/:baz'
-//         },
-//         function(req, res, next) {
-//             t.equal(req.params.baz, 'blah');
-//             res.send(200);
-//             next();
-//         }
-//     );
-//
-//     CLIENT.get('/foo/blah', function(err, _, res) {
-//         t.ifError(err);
-//         t.equal(res.statusCode, 200);
-//         t.equal(count, 1);
-//         t.end();
-//     });
-// });
-
 test('gh-193 next("route") from a use plugin', function(t) {
     var count = 0;
 
@@ -1182,30 +1046,6 @@ test('GH-384 res.json(200, {}) broken', function(t) {
         t.end();
     });
 });
-
-// test('GH-401 regex routing broken', function(t) {
-//     function handle(req, res, next) {
-//         res.send(204);
-//         next();
-//     }
-//
-//     var done = 0;
-//
-//     function client_cb(err, _, res) {
-//         t.ifError(err);
-//         t.equal(res.statusCode, 204);
-//
-//         if (++done === 2) {
-//             t.end();
-//         }
-//     }
-//
-//     SERVER.get('/image', handle);
-//     SERVER.get(/^(\/image\/)(.*)/, handle);
-//
-//     CLIENT.get('/image', client_cb);
-//     CLIENT.get('/image/1.jpg', client_cb);
-// });
 
 test('explicitly sending a 403 with custom error', function(t) {
     function MyCustomError() {}
@@ -2355,21 +2195,3 @@ test('should emit restifyError even for router errors', function(t) {
         t.done();
     });
 });
-
-// test('calling next twice should throw', function(t) {
-//     SERVER.get('/', function(req, res, next) {
-//         res.send(200);
-//         next();
-//         next();
-//     });
-//
-//     SERVER.on('uncaughtException', function(req, res, route, err) {
-//         t.ok(err);
-//         t.equal(err.message, "next shouldn't be called more than once");
-//         t.end();
-//     });
-//
-//     CLIENT.get('/', function(err, req, res, data) {
-//         t.ifError(err);
-//     });
-// });

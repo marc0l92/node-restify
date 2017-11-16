@@ -357,10 +357,15 @@ describe('static resource plugin', function() {
                 });
 
                 SERVER.get('/index.html', function(req, res, next) {
+                    // closed before serve
                     serve(req, res, function(nextRoute) {
                         assert.strictEqual(nextRoute, false);
                         done();
                     });
+                });
+                SERVER.on('after', function(req, res, route, afterErr) {
+                    assert(afterErr.name, 'RequestCloseError');
+                    done();
                 });
 
                 var socket = new net.Socket();

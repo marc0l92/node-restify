@@ -15,6 +15,9 @@ var helper = require('./lib/helper.js');
 var test = helper.test;
 var mockReq = {
     params: {},
+    closed: function() {
+        return false;
+    },
     startHandlerTimer: function() {},
     endHandlerTimer: function() {}
 };

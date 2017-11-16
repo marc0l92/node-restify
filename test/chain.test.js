@@ -27,7 +27,10 @@ test('calls all the handlers', function(t) {
     chain.handle(
         {
             startHandlerTimer: function() {},
-            endHandlerTimer: function() {}
+            endHandlerTimer: function() {},
+            closed: function() {
+                return false;
+            }
         },
         {},
         function() {
@@ -53,7 +56,10 @@ test('abort with Error in next', function(t) {
     chain.handle(
         {
             startHandlerTimer: function() {},
-            endHandlerTimer: function() {}
+            endHandlerTimer: function() {},
+            closed: function() {
+                return false;
+            }
         },
         {},
         function(err) {
@@ -79,11 +85,45 @@ test('abort with false in next', function(t) {
     chain.handle(
         {
             startHandlerTimer: function() {},
-            endHandlerTimer: function() {}
+            endHandlerTimer: function() {},
+            closed: function() {
+                return false;
+            }
         },
         {},
         function(err) {
             t.equal(err, false);
+            t.equal(counter, 1);
+            t.done();
+        }
+    );
+});
+
+test('abort with closed request', function(t) {
+    var chain = new Chain();
+    var counter = 0;
+    var closed = false;
+
+    chain.use(function(req, res, next) {
+        counter++;
+        closed = true;
+        next();
+    });
+    chain.use(function(req, res, next) {
+        counter++;
+        next();
+    });
+    chain.handle(
+        {
+            startHandlerTimer: function() {},
+            endHandlerTimer: function() {},
+            closed: function() {
+                return closed;
+            }
+        },
+        {},
+        function(err) {
+            t.ifError(err);
             t.equal(counter, 1);
             t.done();
         }
@@ -103,7 +143,10 @@ test('calls req.startHandlerTimer', function(t) {
                 t.equal(handleName, 'foo');
                 t.done();
             },
-            endHandlerTimer: function() {}
+            endHandlerTimer: function() {},
+            closed: function() {
+                return false;
+            }
         },
         {},
         function() {}
@@ -123,6 +166,9 @@ test('calls req.endHandlerTimer', function(t) {
             endHandlerTimer: function(handleName) {
                 t.equal(handleName, 'foo');
                 t.done();
+            },
+            closed: function() {
+                return false;
             }
         },
         {},

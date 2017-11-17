@@ -88,6 +88,10 @@ describe('conditional request', function() {
                             CLIENT.get(opts, function(err, _, res, response) {
                                 assert.ifError(err);
                                 assert.equal(res.statusCode, 200);
+                                assert.equal(
+                                    res.headers['api-version'],
+                                    'v1.2.0'
+                                );
                                 assert.equal(response, 'v1.2.0');
                                 callback();
                             });

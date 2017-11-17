@@ -12,35 +12,19 @@ module.exports = {
     url: 'http://localhost:' + port + path
 };
 
-server.pre(function pre(req, res, next) {
+function handler(req, res, next) {
     next();
-});
+}
 
-server.pre(function pre(req, res, next) {
-    next();
-});
+for (var i = 0; i < 10; i++) {
+    server.pre(handler);
+}
 
-server.pre(function pre(req, res, next) {
-    next();
-});
+for (var j = 0; j < 10; j++) {
+    server.use(handler);
+}
 
-server.use(function use(req, res, next) {
-    next();
-});
-
-server.use(function use(req, res, next) {
-    next();
-});
-
-server.use(function use(req, res, next) {
-    next();
-});
-
-server.on('after', function after() {});
-
-server.on('after', function after() {});
-
-server.get(path, function onRequest(req, res) {
+server.get(path, function get(req, res) {
     res.send('hello world');
 });
 

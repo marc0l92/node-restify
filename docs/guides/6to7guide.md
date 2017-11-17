@@ -111,14 +111,29 @@ Fore more info see: https://github.com/delvedor/find-my-way
 DTrace probes comes with some performance impact that's fine for the sake of
 observability but you may don't use it at all.
 
-### Removed `strictNext` server option
+### Change in calling `next` multiple times
 
-Earlier restify through an error with `strictNext` option when a `next()`
-function was called more than once. This option is not available in the new
-version.
+Earlier `restify` automatically prevented calling the `next()` more than once.
+In the new version this behaviour is disabled by default, but you can activate
+it with the `onceNext` property.
+
+The behaviour of the `strictNext` option is unchanged.
+Which means `strictNext` enforces `onceNext` option.
 
 ```js
-restify.createServer({ dtrace: true })
+var server = restify.createServer({ onceNext: true })
+server.use(function (req, req, next) {
+    next();
+    next();
+});
+// -> fine
+
+var server = restify.createServer({ strictNext: true })
+server.use(function (req, req, next) {
+    next();
+    next();
+});
+// -> throws an Error
 ```
 
 ### Router versioning and content type

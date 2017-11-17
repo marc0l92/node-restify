@@ -2195,3 +2195,44 @@ test('should emit restifyError even for router errors', function(t) {
         t.done();
     });
 });
+
+test('should emit error with multiple next calls with strictNext', function(t) {
+    var server = restify.createServer({
+        dtrace: helper.dtrace,
+        strictNext: true,
+        handleUncaughtExceptions: true,
+        log: helper.getLog('server')
+    });
+    var client;
+    var port;
+
+    server.listen(PORT + 1, '127.0.0.1', function() {
+        port = server.address().port;
+        client = restifyClients.createJsonClient({
+            url: 'http://127.0.0.1:' + port,
+            dtrace: helper.dtrace,
+            retry: false
+        });
+
+        server.get('/strict-next', function(req, res, next) {
+            next();
+            next();
+        });
+
+        server.on('uncaughtException', function(req, res, route, err) {
+            t.ok(err);
+            t.equal(err.message, "next shouldn't be called more than once");
+            res.send(err);
+        });
+
+        client.get('/strict-next', function(err, _, res) {
+            t.ok(err);
+            t.equal(res.statusCode, 500);
+
+            client.close();
+            server.close(function() {
+                t.end();
+            });
+        });
+    });
+});

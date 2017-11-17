@@ -130,6 +130,68 @@ test('abort with closed request', function(t) {
     );
 });
 
+test('onceNext prevents double next calls', function(t) {
+    var doneCalled = 0;
+    var chain = new Chain({
+        onceNext: true
+    });
+
+    chain.use(function foo(req, res, next) {
+        next();
+        next();
+    });
+
+    chain.handle(
+        {
+            startHandlerTimer: function() {},
+            endHandlerTimer: function() {},
+            closed: function() {
+                return false;
+            }
+        },
+        {},
+        function(err) {
+            t.ifError(err);
+            doneCalled++;
+            t.equal(doneCalled, 1);
+            t.done();
+        }
+    );
+});
+
+test('throws error for double next calls in strictNext mode', function(t) {
+    var doneCalled = 0;
+    var chain = new Chain({
+        strictNext: true
+    });
+
+    chain.use(function foo(req, res, next) {
+        next();
+        next();
+    });
+
+    try {
+        chain.handle(
+            {
+                startHandlerTimer: function() {},
+                endHandlerTimer: function() {},
+                closed: function() {
+                    return false;
+                }
+            },
+            {},
+            function(err) {
+                t.ifError(err);
+                doneCalled++;
+                t.equal(doneCalled, 1);
+                t.done();
+            }
+        );
+    } catch (err) {
+        t.equal(err.message, "next shouldn't be called more than once");
+    }
+});
+
 test('calls req.startHandlerTimer', function(t) {
     var chain = new Chain();
 

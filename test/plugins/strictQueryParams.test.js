@@ -19,7 +19,8 @@ describe('strictQueryParams', function() {
     beforeEach(function(done) {
         SERVER = restify.createServer({
             dtrace: helper.dtrace,
-            log: helper.getLog('server')
+            log: helper.getLog('server'),
+            handleUncaughtExceptions: true
         });
 
         SERVER.listen(0, '127.0.0.1', function() {
@@ -39,8 +40,7 @@ describe('strictQueryParams', function() {
         SERVER.close(done);
     });
 
-    // TODO: query parser runs before router
-    it.skip('should respond 200 without plugin', function(done) {
+    it('should respond 200 without plugin', function(done) {
         SERVER.use(
             restify.plugins.queryParser({
                 mapParams: true,
@@ -49,9 +49,16 @@ describe('strictQueryParams', function() {
         );
 
         SERVER.get('/query/:id', function(req, res, next) {
-            assert.equal(req.params.id, 'bar');
-            assert.notEqual(req.params.name, 'josep&jorge');
-            assert.deepEqual(req.query, req.params);
+            assert.deepEqual(req.query, {
+                id: 'bar',
+                name: 'josep',
+                jorge: ''
+            });
+            assert.deepEqual(req.params, {
+                id: 'foo',
+                name: 'josep',
+                jorge: ''
+            });
             res.send();
             next();
         });
@@ -196,10 +203,7 @@ describe('strictQueryParams', function() {
         });
     });
 
-    // TODO: query parser runs before router
-    it.skip('should respond to valid query param value with 200', function(
-        done
-    ) {
+    it('should respond to valid query param value with 200', function(done) {
         SERVER.pre(
             restify.plugins.pre.strictQueryParams({
                 message: MESSAGE
@@ -214,9 +218,14 @@ describe('strictQueryParams', function() {
         );
 
         SERVER.get('/query/:id', function(req, res, next) {
-            assert.equal(req.params.id, 'bar');
-            assert.equal(req.params.name, 'josep & jorge');
-            assert.deepEqual(req.query, req.params);
+            assert.deepEqual(req.query, {
+                id: 'bar',
+                name: 'josep & jorge'
+            });
+            assert.deepEqual(req.params, {
+                id: 'foo',
+                name: 'josep & jorge'
+            });
             res.send();
             next();
         });

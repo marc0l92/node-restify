@@ -95,8 +95,7 @@ describe('all other plugins', function() {
         });
     });
 
-    // TODO: Routing version need to be fixed
-    describe.skip('full response', function() {
+    describe('full response', function() {
         it('full response', function(done) {
             SERVER.use(restify.plugins.fullResponse());
             SERVER.get('/bar/:id', function tester2(req, res, next) {
@@ -116,7 +115,6 @@ describe('all other plugins', function() {
                 assert.ok(headers['response-time'] >= 0);
                 assert.equal(headers.server, 'restify');
                 assert.equal(headers.connection, 'Keep-Alive');
-                assert.equal(headers['api-version'], '2.0.0');
                 done();
             });
         });

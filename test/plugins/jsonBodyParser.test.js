@@ -120,11 +120,8 @@ describe('JSON body parser', function() {
         );
     });
 
-    // TODO: params are resolved lated in the router logic,
     // we don't know it in the middlewares
-    it.skip('should fail to map array req.body onto req.params', function(
-        done
-    ) {
+    it('should fail to map array req.body onto req.params', function(done) {
         SERVER.use(
             restify.plugins.jsonBodyParser({
                 mapParams: true
@@ -145,8 +142,7 @@ describe('JSON body parser', function() {
         });
     });
 
-    // TODO: router param mapping runs later
-    it('should map req.body onto req.params', function(done) {
+    it('should assign req.body onto req.params', function(done) {
         SERVER.use(
             restify.plugins.jsonBodyParser({
                 mapParams: true
@@ -175,8 +171,7 @@ describe('JSON body parser', function() {
         );
     });
 
-    // TODO: body parser runs before router
-    it.skip('should take req.body and stomp on req.params', function(done) {
+    it('should assign req.body to req.params', function(done) {
         SERVER.use(
             restify.plugins.jsonBodyParser({
                 mapParams: true,
@@ -185,9 +180,14 @@ describe('JSON body parser', function() {
         );
 
         SERVER.post('/body/:id', function(req, res, next) {
-            assert.equal(req.params.id, 'bar');
-            assert.equal(req.params.name, 'alex');
-            assert.deepEqual(req.body, req.params);
+            assert.deepEqual(req.params, {
+                id: 'foo',
+                name: 'alex'
+            });
+            assert.deepEqual(req.body, {
+                id: 'bar',
+                name: 'alex'
+            });
             res.send();
             next();
         });
@@ -305,63 +305,6 @@ describe('JSON body parser', function() {
         });
 
         client.once('end', function() {
-            done();
-        });
-    });
-
-    it('restify-GH-111 JSON Parser not right for arrays', function(done) {
-        SERVER.use(
-            restify.plugins.bodyParser({
-                mapParams: true
-            })
-        );
-
-        SERVER.post('/gh111', function(req, res, next) {
-            assert.ok(Array.isArray(req.params));
-            assert.equal(req.params[0], 'foo');
-            assert.equal(req.params[1], 'bar');
-            res.send();
-            next();
-        });
-
-        var obj = ['foo', 'bar'];
-        CLIENT.post('/gh111', obj, function(err, _, res) {
-            assert.ifError(err);
-            assert.equal(res.statusCode, 200);
-            done();
-        });
-    });
-
-    it('restify-GH-279 more JSON Arrays', function(done) {
-        SERVER.use(
-            restify.plugins.jsonBodyParser({
-                mapParams: true
-            })
-        );
-
-        SERVER.post('/gh279', function respond(req, res, next) {
-            assert.ok(Array.isArray(req.params));
-            assert.equal(req.params[0].id, '123654');
-            assert.ok(req.params[0].name, 'mimi');
-            assert.ok(req.params[1].id, '987654');
-            assert.ok(req.params[1].name, 'pijama');
-            res.send(200);
-            next();
-        });
-
-        var obj = [
-            {
-                id: '123654',
-                name: 'mimi'
-            },
-            {
-                id: '987654',
-                name: 'pijama'
-            }
-        ];
-        CLIENT.post('/gh279', obj, function(err, _, res) {
-            assert.ifError(err);
-            assert.equal(res.statusCode, 200);
             done();
         });
     });

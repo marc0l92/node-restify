@@ -177,30 +177,30 @@ test('use + get (path only)', function(t) {
     });
 });
 
-// test('rm', function(t) {
-//     var route = SERVER.get('/foo/:id', function foosy(req, res, next) {
-//         next();
-//     });
-//
-//     SERVER.get('/bar/:id', function barsy(req, res, next) {
-//         t.ok(req.params);
-//         t.equal(req.params.id, 'foo');
-//         res.send();
-//         next();
-//     });
-//
-//     t.ok(SERVER.rm(route));
-//
-//     CLIENT.get('/foo/bar', function(err, _, res) {
-//         t.ok(err);
-//         t.equal(res.statusCode, 404);
-//         CLIENT.get('/bar/foo', function(err2, __, res2) {
-//             t.ifError(err2);
-//             t.equal(res2.statusCode, 200);
-//             t.end();
-//         });
-//     });
-// });
+test('rm', function(t) {
+    var routeName = SERVER.get('/foo/:id', function foosy(req, res, next) {
+        next();
+    });
+
+    SERVER.get('/bar/:id', function barsy(req, res, next) {
+        t.ok(req.params);
+        t.equal(req.params.id, 'foo');
+        res.send();
+        next();
+    });
+
+    t.ok(SERVER.rm(routeName));
+
+    CLIENT.get('/foo/bar', function(err, _, res) {
+        t.ok(err);
+        t.equal(res.statusCode, 404);
+        CLIENT.get('/bar/foo', function(err2, __, res2) {
+            t.ifError(err2);
+            t.equal(res2.statusCode, 200);
+            t.end();
+        });
+    });
+});
 
 test('use - throws TypeError on non function as argument', function(t) {
     var errMsg = 'handler (function) is required';

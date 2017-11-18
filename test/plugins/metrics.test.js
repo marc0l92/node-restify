@@ -42,6 +42,10 @@ describe('request metrics plugin', function() {
     });
 
     it('should return metrics for a given request', function(done) {
+        SERVER.on('uncaughtException', function(req, res, route, err) {
+            assert.ifError(err);
+        });
+
         SERVER.on(
             'after',
             restify.plugins.metrics(
@@ -84,6 +88,10 @@ describe('request metrics plugin', function() {
         // we test that the client times out and closes the request. server
         // flushes request responsibly but connectionState should indicate it
         // was closed by the server.
+
+        SERVER.on('uncaughtException', function(req, res, route, err) {
+            assert.ifError(err);
+        });
 
         SERVER.on(
             'after',

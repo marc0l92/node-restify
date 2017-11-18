@@ -105,7 +105,10 @@ describe('request metrics plugin', function() {
 
                     assert.isObject(metrics, 'metrics');
                     assert.equal(metrics.statusCode, 200); // router doesn't run
-                    assert.isAtLeast(metrics.latency, 200);
+                    // However the timeout value is 200,
+                    // it's calculated by the client,
+                    // but setTimeout is happening on the server, tolerate 10ms
+                    assert.isAtLeast(metrics.latency, 200 - 10);
                     assert.equal(metrics.path, '/foo');
                     assert.equal(metrics.method, 'GET');
                     assert.equal(metrics.connectionState, 'close');

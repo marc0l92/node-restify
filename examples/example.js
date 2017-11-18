@@ -13,7 +13,7 @@ server.use(function use(req, res, next) {
     next();
 });
 
-server.on('after', function() {
+server.on('after', function(req, res, route, err) {
     console.log('after');
 });
 

@@ -896,6 +896,8 @@ server.get('/hello/:name', restify.plugins.conditionalHandler([
      handler: function(req, res, next) { res.send('3.x, json') }
   }
 ]);
+// 'accept-version': '^1.1.0' => 1.5.x, 2.x'
+// 'accept-version': '3.x', accept: 'application/json' => '3.x, json'
 ```
 
 -   Throws **InvalidVersionError** 
@@ -979,6 +981,7 @@ server.on('after', restify.plugins.auditLogger({
     name: 'audit',
     stream: process.stdout
   }),
+  event: 'after',
   server: SERVER,
   logMetrics : logBuffer,
   printLog : true
@@ -1132,11 +1135,11 @@ Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
     -   `metrics.inflightRequests` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Number of inflight requests pending
           in restify.
     -   `metrics.unifinishedRequests` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Same as `inflightRequests`
-    -   `metrics.connectionState` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** can be either `'close'`,
-          `'aborted'`, or `undefined`. If this value is set, err will be a
-          corresponding `RequestCloseError` or `RequestAbortedError`.
+    -   `metrics.connectionState` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** can be either `'close'` or
+         `undefined`. If this value is set, err will be a
+          corresponding `RequestCloseError`.
           If connectionState is either
-          `'close'` or `'aborted'`, then the `statusCode` is not applicable since the
+          `'close'`, then the `statusCode` is not applicable since the
           connection was severed before a response was written.
 -   `req` **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request)** the request obj
 -   `res` **[Response](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5)** the response obj

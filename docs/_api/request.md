@@ -354,9 +354,8 @@ Returns **[undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Re
 Returns the connection state of the request. Current possible values are:
 
 -   `close` - when the request has been closed by the clien
--   `aborted` - when the socket was closed unexpectedly
 
-Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** connection state (`"closed"`, `"aborted"`)
+Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** connection state (`"close"`)
 
 ### getRoute
 

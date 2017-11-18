@@ -13,6 +13,13 @@ backend.
 
 ## Breaking Changes
 
+### Server throws `RequestCloseError` instead of `RequestAbortedError`
+
+Server throws `RequestCloseError` instead of `RequestAbortedError` in the case
+of the request was terminated by the client for some reason.
+
+The new version of restify never throws `RequestAbortedError`.
+
 ### `req.params` property is not available in `use` and `pre`
 
 `req.params` is only available in route handlers and in `after` handlers.

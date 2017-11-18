@@ -1817,34 +1817,6 @@ test(
     }
 );
 
-// TODO: what's the difference compared to "close"?
-// test(
-//     "should 'emit' after on aborted request " +
-//         "(req.connectionState(): 'aborted')",
-//     function(t) {
-//         SERVER.on('after', function(req, res, route, err) {
-//             t.ok(err);
-//             t.equal(req.connectionState(), 'aborted');
-//             t.equal(err.name, 'RequestAbortedError');
-//         });
-//
-//         SERVER.get('/foobar', function(req, res, next) {
-//             req.emit('aborted');
-//             // fast client times out at 500ms, wait for 800ms which should cause
-//             // client to timeout
-//             setTimeout(function() {
-//                 return next();
-//             }, 800);
-//         });
-//
-//         FAST_CLIENT.get('/foobar', function(err, _, res) {
-//             t.ok(err);
-//             t.equal(err.name, 'RequestTimeoutError');
-//             t.end();
-//         });
-//     }
-// );
-
 test('should increment/decrement inflight request count', function(t) {
     SERVER.get('/foo', function(req, res, next) {
         t.equal(SERVER.inflightRequests(), 1);

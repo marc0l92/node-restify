@@ -80,7 +80,7 @@ describe('request metrics plugin', function() {
         });
     });
 
-    it.skip("should return 'RequestCloseError' err", function(done) {
+    it("should return 'RequestCloseError' err", function(done) {
         // we test that the client times out and closes the request. server
         // flushes request responsibly but connectionState should indicate it
         // was closed by the server.
@@ -96,7 +96,7 @@ describe('request metrics plugin', function() {
                     assert.equal(err.name, 'RequestCloseError');
 
                     assert.isObject(metrics, 'metrics');
-                    assert.equal(metrics.statusCode, 202);
+                    assert.equal(metrics.statusCode, 200); // router doesn't run
                     assert.isAtLeast(metrics.latency, 200);
                     assert.equal(metrics.path, '/foo');
                     assert.equal(metrics.method, 'GET');
@@ -109,6 +109,7 @@ describe('request metrics plugin', function() {
 
         SERVER.get('/foo', function(req, res, next) {
             setTimeout(function() {
+                assert.fail('Client has already closed request');
                 res.send(202, 'hello world');
                 return next();
             }, 250);
@@ -118,45 +119,6 @@ describe('request metrics plugin', function() {
             // request should timeout
             assert.ok(err);
             assert.equal(err.name, 'RequestTimeoutError');
-        });
-    });
-
-    it("should return 'RequestAbortedError' err", function(done) {
-        // we test that the client times out and closes the request. server
-        // flushes request responsibly but connectionState should indicate it
-        // was closed by the server.
-
-        SERVER.on(
-            'after',
-            restify.plugins.metrics(
-                {
-                    server: SERVER
-                },
-                function(err, metrics, req, res, route) {
-                    assert.ok(err);
-                    assert.equal(err.name, 'RequestAbortedError');
-
-                    assert.isObject(metrics, 'metrics');
-                    assert.equal(metrics.statusCode, 202);
-                    assert.isAtLeast(metrics.latency, 200);
-                    assert.equal(metrics.path, '/foo');
-                    assert.equal(metrics.method, 'GET');
-                    assert.equal(metrics.connectionState, 'aborted');
-                    assert.isNumber(metrics.inflightRequests);
-                }
-            )
-        );
-
-        SERVER.get('/foo', function(req, res, next) {
-            // simulate request being aborted by TCP socket being closed
-            req.emit('aborted');
-            res.send(202, 'hello world');
-            return next();
-        });
-
-        CLIENT.get('/foo?a=1', function(err, _, res) {
-            assert.ifError(err);
-            return done();
         });
     });
 

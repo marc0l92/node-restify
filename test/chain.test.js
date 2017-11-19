@@ -40,6 +40,41 @@ test('calls all the handlers', function(t) {
     );
 });
 
+test('supports nested chains', function(t) {
+    var chain = new Chain();
+    var chainNested = new Chain();
+    var counter = 0;
+
+    chainNested.use(function(req, res, next) {
+        counter++;
+        next();
+    });
+    chainNested.use(function(req, res, next) {
+        counter++;
+        next();
+    });
+
+    chain.use(chainNested);
+    chain.use(function(req, res, next) {
+        counter++;
+        next();
+    });
+    chain.handle(
+        {
+            startHandlerTimer: function() {},
+            endHandlerTimer: function() {},
+            closed: function() {
+                return false;
+            }
+        },
+        {},
+        function() {
+            t.equal(counter, 3);
+            t.done();
+        }
+    );
+});
+
 test('abort with Error in next', function(t) {
     var chain = new Chain();
     var counter = 0;
@@ -72,14 +107,12 @@ test('abort with Error in next', function(t) {
 
 test('abort with false in next', function(t) {
     var chain = new Chain();
-    var counter = 0;
 
     chain.use(function(req, res, next) {
-        counter++;
         next(false);
     });
     chain.use(function(req, res, next) {
-        counter++;
+        t.fail('Should not be here');
         next();
     });
     chain.handle(
@@ -93,7 +126,6 @@ test('abort with false in next', function(t) {
         {},
         function(err) {
             t.equal(err, false);
-            t.equal(counter, 1);
             t.done();
         }
     );
@@ -101,17 +133,14 @@ test('abort with false in next', function(t) {
 
 test('abort with closed request', function(t) {
     var chain = new Chain();
-    var counter = 0;
     var closed = false;
 
     chain.use(function(req, res, next) {
-        counter++;
         closed = true;
         next();
     });
     chain.use(function(req, res, next) {
-        counter++;
-        next();
+        t.fail('Should not be here');
     });
     chain.handle(
         {
@@ -124,7 +153,37 @@ test('abort with closed request', function(t) {
         {},
         function(err) {
             t.ifError(err);
-            t.equal(counter, 1);
+            t.done();
+        }
+    );
+});
+
+test('cals error middleware', function(t) {
+    t.expect(2);
+    var chain = new Chain();
+    var myError = new Error('Foo');
+
+    chain.use(function(req, res, next) {
+        next(myError);
+    });
+    chain.use(function(err, req, res, next) {
+        t.deepEqual(err, myError);
+        next(err);
+    });
+    chain.use(function(req, res, next) {
+        t.fail('Should not be here');
+    });
+    chain.handle(
+        {
+            startHandlerTimer: function() {},
+            endHandlerTimer: function() {},
+            closed: function() {
+                return false;
+            }
+        },
+        {},
+        function(err) {
+            t.deepEqual(err, myError);
             t.done();
         }
     );

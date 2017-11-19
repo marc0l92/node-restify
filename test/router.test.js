@@ -69,7 +69,9 @@ test('unmounts a route', function(t) {
     t.deepEqual(Object.keys(router.getRoutes()), ['geta', 'postb']);
 
     // Unmount
-    router.unmount('geta');
+    var route = router.unmount('geta');
+    t.ok(route);
+    t.equal(route.name, 'geta');
 
     // Removes from mounted routes
     t.deepEqual(Object.keys(router.getRoutes()), ['postb']);
@@ -92,6 +94,21 @@ test('unmounts a route', function(t) {
             t.end();
         }
     );
+});
+
+test('unmounts a route that does not exist', function(t) {
+    function handler(req, res, next) {
+        res.send('Hello world');
+    }
+
+    var router = new Router({
+        log: {}
+    });
+
+    // Mount
+    router.mount({ method: 'GET', path: '/a' }, [handler]);
+    t.notOk(router.unmount('non-existing'));
+    t.end();
 });
 
 test('clean up xss for 404', function(t) {
@@ -303,4 +320,78 @@ test('route handles method not allowed (405)', function(t) {
             t.end();
         }
     );
+});
+
+test('route handles 404 with lookupByName', function(t) {
+    var router = new Router({
+        log: {}
+    });
+    router.lookupByName(
+        'non-existing',
+        Object.assign(
+            {
+                getUrl: function() {
+                    return { pathname: '/' };
+                },
+                method: 'GET'
+            },
+            mockReq
+        ),
+        mockRes,
+        function next(err) {
+            t.equal(err.statusCode, 404);
+            t.end();
+        }
+    );
+});
+
+test('prints debug info', function(t) {
+    function handler1(req, res, next) {
+        res.send('Hello world');
+    }
+    function handler2(req, res, next) {
+        res.send('Hello world');
+    }
+
+    var router = new Router({
+        log: {}
+    });
+    router.mount({ method: 'GET', path: '/' }, [handler1]);
+    router.mount({ method: 'POST', path: '/' }, [handler1, handler2]);
+
+    t.deepEqual(router.getDebugInfo(), {
+        get: {
+            name: 'get',
+            method: 'get',
+            path: '/',
+            handlers: [handler1]
+        },
+        post: {
+            name: 'post',
+            method: 'post',
+            path: '/',
+            handlers: [handler1, handler2]
+        }
+    });
+    t.end();
+});
+
+test('toString()', function(t) {
+    function handler(req, res, next) {
+        res.send('Hello world');
+    }
+
+    var router = new Router({
+        log: {}
+    });
+    router.mount({ method: 'GET', path: '/' }, [handler]);
+    router.mount({ method: 'GET', path: '/a' }, [handler]);
+    router.mount({ method: 'GET', path: '/a/b' }, [handler]);
+    router.mount({ method: 'POST', path: '/' }, [handler]);
+
+    t.deepEqual(
+        router.toString(),
+        '└── / (GET|POST)\n' + '    └── a (GET)\n' + '        └── /b (GET)\n'
+    );
+    t.end();
 });

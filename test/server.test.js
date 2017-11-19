@@ -1620,6 +1620,32 @@ test('calling next(false) should early exit from pre handlers', function(t) {
     });
 });
 
+test('calling next(false) should early exit from use handlers', function(t) {
+    var afterFired = false;
+
+    SERVER.use(function(req, res, next) {
+        res.send('early exit');
+        return next(false);
+    });
+
+    SERVER.get('/1', function(req, res, next) {
+        res.send('hello world');
+        return next();
+    });
+
+    SERVER.on('after', function() {
+        afterFired = true;
+    });
+
+    CLIENT.get('/1', function(err, req, res, data) {
+        t.ifError(err);
+        t.equal(data, 'early exit');
+        // ensure after event fired
+        t.ok(afterFired);
+        t.end();
+    });
+});
+
 test('calling next(err) from pre should still emit after event', function(t) {
     setTimeout(function() {
         t.fail('Timed out');

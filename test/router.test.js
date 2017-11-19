@@ -4,6 +4,7 @@
 var restify = require('../lib');
 var Router = require('../lib/router');
 var clients = require('restify-clients');
+var _ = require('lodash');
 
 if (require.cache[__dirname + '/lib/helper.js']) {
     delete require.cache[__dirname + '/lib/helper.js'];
@@ -27,6 +28,71 @@ var mockRes = {
 };
 
 ///--- Tests
+
+test('mounts a route', function(t) {
+    function handler(req, res, next) {
+        res.send('Hello world');
+    }
+
+    var router = new Router({
+        log: {}
+    });
+    router.mount({ method: 'GET', path: '/' }, [handler]);
+    router.mount({ method: 'POST', path: '/' }, [handler]);
+    router.mount({ method: 'GET', path: '/ab' }, [handler]);
+
+    t.deepEqual(Object.keys(router.getRoutes()), ['get', 'post', 'getab']);
+
+    // Route names are unique
+    router.mount({ name: 'get', method: 'GET', path: '/get' }, [handler]);
+    router.mount({ method: 'GET', path: '/a/b' }, [handler]);
+    t.deepEqual(
+        _.uniq(Object.keys(router.getRoutes())),
+        Object.keys(router.getRoutes())
+    );
+
+    t.done();
+});
+
+test('unmounts a route', function(t) {
+    function handler(req, res, next) {
+        res.send('Hello world');
+    }
+
+    var router = new Router({
+        log: {}
+    });
+
+    // Mount
+    router.mount({ method: 'GET', path: '/a' }, [handler]);
+    router.mount({ method: 'POST', path: '/b' }, [handler]);
+    t.deepEqual(Object.keys(router.getRoutes()), ['geta', 'postb']);
+
+    // Unmount
+    router.unmount('geta');
+
+    // Removes from mounted routes
+    t.deepEqual(Object.keys(router.getRoutes()), ['postb']);
+
+    // 404
+    router.lookup(
+        Object.assign(
+            {
+                getUrl: function() {
+                    return { pathname: '/a' };
+                },
+                method: 'GET'
+            },
+            mockReq
+        ),
+        mockRes,
+        function next(err) {
+            t.ok(err);
+            t.equal(err.name, 'ResourceNotFoundError');
+            t.end();
+        }
+    );
+});
 
 test('clean up xss for 404', function(t) {
     var server = restify.createServer();

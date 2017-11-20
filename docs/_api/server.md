@@ -20,7 +20,6 @@ permalink: /docs/server-api/
     -   [opts](#opts)
     -   [pre](#pre)
     -   [use](#use)
-    -   [param](#param)
     -   [rm](#rm)
     -   [address](#address)
     -   [inflightRequests](#inflightrequests)
@@ -317,29 +316,6 @@ You can pass in any combination of functions or array of functions.
 
 -   `handler` **...([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array))** A variable number of handler functions-   and/or a
         variable number of nested arrays of handler functions
-
-Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** returns self
-
-### param
-
--   **See: <http://expressjs.com/guide.html#route-param%20pre-conditions>**
-
-Minimal port of the functionality offered by Express.js Route Param
-Pre-conditions
-
-This basically piggy-backs on the `server.use` method. It attaches a
-new middleware function that only fires if the specified parameter exists
-in req.params
-
-Exposes an API:
-  server.param("user", function (req, res, next) {
-    // load the user's information here, always making sure to call next()
-  });
-
-**Parameters**
-
--   `name` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the URL param to respond to
--   `fn` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)**   The middleware function to execute
 
 Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** returns self
 

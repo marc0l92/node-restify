@@ -202,6 +202,34 @@ test('rm', function(t) {
     });
 });
 
+test(
+    '_routeErrorResponse does not cause uncaughtException when called when' +
+        'header has already been sent',
+    function(t) {
+        SERVER.on('MethodNotAllowed', function(req, res, error, next) {
+            res.json(405, { status: 'MethodNotAllowed' });
+            try {
+                next();
+            } catch (err) {
+                t.fail(
+                    'next() should not throw error' +
+                        'when header has already been sent'
+                );
+            }
+            t.end();
+        });
+
+        SERVER.post('/routePostOnly', function tester(req, res, next) {
+            next();
+        });
+
+        CLIENT.get('/routePostOnly', function(err, _, res) {
+            t.ok(err);
+            t.equal(res.statusCode, 405);
+        });
+    }
+);
+
 test('use - throws TypeError on non function as argument', function(t) {
     var errMsg = 'handler (function) is required';
 

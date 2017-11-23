@@ -188,9 +188,3 @@ server.get('/hello/:name', restify.plugins.conditionalHandler([
 // 'accept-version': '^1.1.0' => 1.5.x, 2.x'
 // 'accept-version': '3.x', accept: 'application/json' => '3.x, json'
 ```
-
-### Disallow `jsonBodyParser` mapParams with an Array body
-
-Earlier `jsonBodyParser` throwed an `InternalError` when route params existed
-and body was an `Array`. In this new version we never allow `Array` body to be
-mapped as route's `req.params` are resolved later and it's not safe to map them to an `Array`.

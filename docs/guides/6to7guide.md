@@ -50,11 +50,6 @@ server.get('/:userId', function(req, res, next) {
 );
 ```
 
-### `server.param(paramNem, handler)` method is not available
-
-`server.param` is removed as it's required knowing the `req.params` before
-routing.
-
 ### Non-strict routing is gone
 
 Option `strictRouting` is removed `createServer({ strictRouting: false })`.

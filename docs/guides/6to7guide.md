@@ -20,36 +20,6 @@ of the request was terminated by the client for some reason.
 
 The new version of restify never throws `RequestAbortedError`.
 
-### `req.params` property is not available in `use` and `pre`
-
-`req.params` is only available in route handlers and in `after` handlers.
-Earlier route was resolved before any handlers and `req.params` were available
-in `pre` and `use` handlers.
-
-It has also effect to the `bodyParser` and `queryParser` params mapping as
-router params will have a higher precedence in the case of overlapping
-properties.
-
-```js
-var server = restify.createServer()
-server.pre(function(req, res, next) {
-    // req.params is NOT available here
-    next();
-});
-server.use(function(req, res, next) {
-    // req.params is NOT available here
-    next();
-});
-server.on('after', function() {
-    // req.params is available here
-});
-server.get('/:userId', function(req, res, next) {
-    // req.params is available here
-    res.send({ params: req.params });
-    next();
-);
-```
-
 ### Non-strict routing is gone
 
 Option `strictRouting` is removed `createServer({ strictRouting: false })`.

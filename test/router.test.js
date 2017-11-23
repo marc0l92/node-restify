@@ -77,7 +77,7 @@ test('unmounts a route', function(t) {
     t.deepEqual(Object.keys(router.getRoutes()), ['postb']);
 
     // 404
-    router.lookup(
+    var handlerFound = router.lookup(
         Object.assign(
             {
                 getUrl: function() {
@@ -87,13 +87,11 @@ test('unmounts a route', function(t) {
             },
             mockReq
         ),
-        mockRes,
-        function next(err) {
-            t.ok(err);
-            t.equal(err.name, 'ResourceNotFoundError');
-            t.end();
-        }
+        mockRes
     );
+
+    t.notOk(handlerFound);
+    t.end();
 });
 
 test('unmounts a route that does not exist', function(t) {
@@ -149,22 +147,21 @@ test('lookupByName runs a route by name and calls next', function(t) {
     var router = new Router({
         log: {}
     });
-    router.mount({ method: 'GET', path: '/', name: 'my-route' }, [
-        function(req, res, next) {
-            res.send('hello world');
-        }
-    ]);
 
-    router.lookupByName(
-        'my-route',
-        mockReq,
-        Object.assign({}, mockRes, {
-            send: function(data) {
-                t.equal(data, 'hello world');
-                t.end();
-            }
-        })
-    );
+    function handler(req, res, next) {
+        res.send('hello world');
+        next();
+    }
+
+    router.mount({ method: 'GET', path: '/', name: 'my-route' }, [handler]);
+
+    var handlerFound = router.lookupByName('my-route', mockReq, mockRes);
+    t.ok(handlerFound);
+
+    handlerFound(mockReq, mockRes, function next(err) {
+        t.ifError(err);
+        t.end();
+    });
 });
 
 test('lookupByName calls next with err', function(t) {
@@ -178,7 +175,10 @@ test('lookupByName calls next with err', function(t) {
         }
     ]);
 
-    router.lookupByName('my-route', mockReq, mockRes, function next(err) {
+    var handlerFound = router.lookupByName('my-route', mockReq, mockRes);
+    t.ok(handlerFound);
+
+    handlerFound(mockReq, mockRes, function next(err) {
         t.deepEqual(err, myErr);
         t.end();
     });
@@ -195,7 +195,7 @@ test('lookup runs a route chain by path and calls next', function(t) {
         }
     ]);
 
-    router.lookup(
+    var handlerFound = router.lookup(
         Object.assign(
             {
                 getUrl: function() {
@@ -205,12 +205,14 @@ test('lookup runs a route chain by path and calls next', function(t) {
             },
             mockReq
         ),
-        mockRes,
-        function next(err) {
-            t.ifError(err);
-            t.end();
-        }
+        mockRes
     );
+    t.ok(handlerFound);
+
+    handlerFound(mockReq, mockRes, function next(err) {
+        t.ifError(err);
+        t.end();
+    });
 });
 
 test('lookup calls next with err', function(t) {
@@ -224,7 +226,7 @@ test('lookup calls next with err', function(t) {
         }
     ]);
 
-    router.lookup(
+    var handlerFound = router.lookup(
         Object.assign(
             {
                 getUrl: function() {
@@ -234,49 +236,21 @@ test('lookup calls next with err', function(t) {
             },
             mockReq
         ),
-        mockRes,
-        function next(err) {
-            t.deepEqual(err, myErr);
-            t.end();
-        }
+        mockRes
     );
-});
+    t.ok(handlerFound);
 
-test('lookup emits routed when route found', function(t) {
-    var router = new Router({
-        log: {}
-    });
-    router.mount({ method: 'GET', path: '/', name: 'my-route' }, [
-        function(req, res, next) {
-            res.send('Hello world');
-            next(); // no _afterRoute without next()
-        }
-    ]);
-
-    router.on('routed', function(req, res, route) {
+    handlerFound(mockReq, mockRes, function next(err) {
+        t.deepEqual(err, myErr);
         t.end();
     });
-
-    router.lookup(
-        Object.assign(
-            {
-                getUrl: function() {
-                    return { pathname: '/' };
-                },
-                method: 'GET'
-            },
-            mockReq
-        ),
-        mockRes,
-        function next() {}
-    );
 });
 
 test('route handles 404', function(t) {
     var router = new Router({
         log: {}
     });
-    router.lookup(
+    router.defaultRoute(
         Object.assign(
             {
                 getUrl: function() {
@@ -304,7 +278,7 @@ test('route handles method not allowed (405)', function(t) {
         }
     ]);
 
-    router.lookup(
+    router.defaultRoute(
         Object.assign(
             {
                 getUrl: function() {
@@ -317,29 +291,6 @@ test('route handles method not allowed (405)', function(t) {
         mockRes,
         function next(err) {
             t.equal(err.statusCode, 405);
-            t.end();
-        }
-    );
-});
-
-test('route handles 404 with lookupByName', function(t) {
-    var router = new Router({
-        log: {}
-    });
-    router.lookupByName(
-        'non-existing',
-        Object.assign(
-            {
-                getUrl: function() {
-                    return { pathname: '/' };
-                },
-                method: 'GET'
-            },
-            mockReq
-        ),
-        mockRes,
-        function next(err) {
-            t.equal(err.statusCode, 404);
             t.end();
         }
     );

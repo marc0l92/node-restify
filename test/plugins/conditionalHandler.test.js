@@ -541,4 +541,70 @@ describe('conditional request', function() {
             });
         });
     });
+
+    describe('multiple handlers', function() {
+        beforeEach(function(done) {
+            SERVER = restify.createServer({
+                dtrace: helper.dtrace,
+                log: helper.getLog('server')
+            });
+
+            SERVER.listen(0, '127.0.0.1', function() {
+                PORT = SERVER.address().port;
+                CLIENT = restifyClients.createJsonClient({
+                    url: 'http://127.0.0.1:' + PORT,
+                    dtrace: helper.dtrace,
+                    retry: false
+                });
+
+                done();
+            });
+        });
+
+        afterEach(function(done) {
+            CLIENT.close();
+            SERVER.close(done);
+        });
+
+        it('should run each of the handlers', function(done) {
+            var counter = 0;
+
+            SERVER.get(
+                '/',
+                restify.plugins.conditionalHandler([
+                    {
+                        handler: [
+                            function handler1(req, res, next) {
+                                counter += 1;
+                                next();
+                            },
+                            function handler2(req, res, next) {
+                                counter += 1;
+                                next();
+                            },
+                            function handler3(req, res, next) {
+                                counter += 1;
+                                res.send('v1.2.0');
+                            }
+                        ],
+                        version: 'v1.2.0'
+                    }
+                ])
+            );
+
+            var opts = {
+                path: '/',
+                headers: {
+                    'accept-version': '1.2.0'
+                }
+            };
+            CLIENT.get(opts, function(err, _, res, response) {
+                assert.ifError(err);
+                assert.equal(res.statusCode, 200);
+                assert.equal(counter, 3, 'calls all of the handlers');
+                assert.equal(response, 'v1.2.0');
+                done();
+            });
+        });
+    });
 });
